@@ -206,7 +206,7 @@ export class RoomComponent {
       .then((stream) => {
         this.audioStream = stream;
         this.mediaRecorder = new MediaRecorder(this.audioStream);
-
+        
         this.mediaRecorder.ondataavailable = (e: any) => {
           this.recordedChunks.push(e.data);
         };
@@ -273,12 +273,49 @@ export class RoomComponent {
         console.error("Element with ID 'your_id' not found");
     }
 }
-
-
-
+ 
+      showAcceptRejectButtons(isReceiver: boolean, senderId?: string) {
+        console.log(isReceiver);
+        if (isReceiver) {
+            const acceptButton = document.createElement("button");
+            acceptButton.innerText = "Accept call from " + senderId;
+            acceptButton.onclick = () => this.acceptConnection(); // Fix here
+  
+            const rejectButton = document.createElement("button");
+            rejectButton.innerText = "Reject";
+            rejectButton.onclick = () => this.rejectConnection(); // Fix here
+  
+            const buttonsContainer = document.getElementById("buttons-container");
+            if (buttonsContainer) { // Check if the element is present
+                buttonsContainer.innerHTML = "";
+                buttonsContainer.appendChild(acceptButton);
+                buttonsContainer.appendChild(rejectButton);
+            }
+        }
+    }
+  
+    acceptConnection() {
+        // Handle the logic when the connection is accepted
+        console.log("Connection accepted");
+        // Add your logic here
+    }
+  
+    rejectConnection() {
+        // Handle the logic when the connection is rejected
+        console.log("Connection rejected");
+        this.isConnectionRejected = true;
+        alert("Connection rejected by the other user.");
+    }
+  
 
    connectToPeer() {
+    console.log("connection request is runnning")
 
+    if (this.conn && this.conn.open) {
+      console.log("User is already connected to another call");
+      return;
+    }
+    
     if (this.peerId.trim() === '') {
       console.error('Peer ID cannot be empty');
       return;
@@ -296,18 +333,6 @@ export class RoomComponent {
       this.conn.on("error", (err:any) => {
           console.error("Error connecting to peer: " + err);
       });
-  }
-
-  showAcceptRejectButtons(isReceiver: boolean, senderId?: string) {
-    // Implement button creation logic here
-  }
-
-  acceptConnection() {
-    // Implement logic when the connection is accepted
-  }
-
-  rejectConnection() {
-    // Implement logic when the connection is rejected
   }
 
   appendMessage(message: any, isMe: boolean) {
